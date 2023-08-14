@@ -3,6 +3,7 @@ function CreateBoard() {
     const rows = 3;
     const cols = 3;
 
+    //Create board
     let board = [];
     for(let i = 0; i < rows; i++) {
         board[i] = [];
@@ -15,7 +16,7 @@ function CreateBoard() {
     const play = (row, col, player) => {
         // Return true if player succeds, else false
         const cell = board[row][col]
-        if (cell.getValue() == ' ') {
+        if (cell.isEmpty()) {
             cell.changeValue(player);
             return true;
         }
@@ -24,7 +25,7 @@ function CreateBoard() {
 
     // Console Print
     const printBoard = () => {
-        for(let i = 0; i<rows; i++) {
+        for(let i = 0; i < rows; i++) {
             console.log(`| ${board[i][0].getValue()} | ${board[i][1].getValue()} | ${board[i][2].getValue()} | ${i}`)
         }
     }
@@ -101,6 +102,8 @@ function Cell() {
 function gameControl () {
     let board = CreateBoard();
 
+    const getBoard = () => board.getBoard();
+
     const player = [
         {
             name: 'Player 1',
@@ -117,17 +120,89 @@ function gameControl () {
 
     const changeTurn = () => {(playerTurn == player[0] ? playerTurn=player[1] : playerTurn=player[0])}
     
+    const printTurn = () => {
+        console.log(`It's ${getTurn().name} turn`);
+        board.printBoard();
+    }
+
+    const restartGame = (winner) => {
+        board = CreateBoard();
+        playerTurn = winner;
+        printTurn();
+    }
+
+    const playRound = (row, col) => {
+        // If the play goes through return true else returns false
+        if(board.play(row, col, getTurn())) {
+            printTurn();
+            changeTurn();
+            
+            let winner = board.checkWin();
+
+            // checkWin() receives the player if won, otherwise true if Tie
+            if(winner) {
+                // Check if winner is a player
+                if(player.includes(winner)) {
+                    console.log(`${winner.name} wins!`)
+                    restartGame(winner);
+                } else {
+                    console.log('Tie!');
+                    restartGame(getTurn());
+                }
+            }
+            return;
+        };
+        console.log(`Can't play that position`);
+    }
+
+    printTurn();
+
     return{
-        changeTurn,
         getTurn,
-        getBoard: board.getBoard,
+        playRound,
+        getBoard,
     };
 }
 
-const displayControl = () => {
-    game = gameControl();
+function displayControl () {
+    let game = gameControl();
 
+    const updateBoard = () => {
+        const boardDiv = document.querySelector('#board');
+        boardDiv.innerHTML = '';
+        let board = game.getBoard();
+        let rowCounter = 0;
+        let colCounter = 0;
+        
+        board.forEach(row => {
+            row.forEach(cell => {
+                const cellDiv = document.createElement('button');
+                cellDiv.setAttribute('id', rowCounter.toString() + colCounter.toString());
+                cellDiv.setAttribute('class', 'cell');
+                cellDiv.innerHTML = cell.getValue();
+                cellDiv.addEventListener('click', (e) => {play(e.target.id)}); // Gives the id of the clicked button as argument
+                boardDiv.appendChild(cellDiv);
 
+                colCounter++;
+            })
+            rowCounter++;
+            colCounter = 0;
+        })
+    }
+
+    const play = (buttonId) => {
+        // The Id of button are made of 2 numbers, first the row second the col
+        const row = buttonId[0];
+        const col = buttonId[1];
+        game.playRound(row, col);
+        
+        updateBoard();
+    }
+
+    return{updateBoard}
 }
 
-displayControl();
+
+
+let game1 = displayControl();   
+game1.updateBoard();
