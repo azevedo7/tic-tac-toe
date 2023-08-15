@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@100;300;400;700&display=swap');
+
 html {
     margin: 0;
     padding: 0;
+    font-family: 'Roboto Mono', monospace;
 }
 
 .cell {
@@ -10,7 +13,6 @@ html {
     background-color: white;
     border-radius: 10px;
     font-size: 70px;
-    
 }
 
 #board {
@@ -19,4 +21,10 @@ html {
     grid-template-rows: repeat(3, 150px);
 
     justify-content: center;
+}
+
+#turn {
+    text-align: center;
+    font-size: 2em;
+    padding: 1em;
 }

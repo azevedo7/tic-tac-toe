@@ -59,7 +59,7 @@ function CreateBoard() {
             return board[1][1].getPlayer();
         }
 
-        if((board[2][0].getValue() == board[1][1].getValue()) && (board[1][1].getValue() == board[2][0].getValue()) && !board[1][1].isEmpty()) {
+        if((board[2][0].getValue() == board[1][1].getValue()) && (board[1][1].getValue() == board[0][2].getValue()) && !board[1][1].isEmpty()) {
             return board[1][1].getPlayer();
         }
 
@@ -137,20 +137,22 @@ function gameControl () {
             printTurn();
             changeTurn();
             
-            let winner = board.checkWin();
+            // let winner = board.checkWin();
 
-            // checkWin() receives the player if won, otherwise true if Tie
-            if(winner) {
-                // Check if winner is a player
-                if(player.includes(winner)) {
-                    console.log(`${winner.name} wins!`)
-                    restartGame(winner);
-                } else {
-                    console.log('Tie!');
-                    restartGame(getTurn());
-                }
-            }
-            return;
+            // // checkWin() receives the player if won, otherwise true if Tie
+            // if(winner) {
+            //     // Check if winner is a player
+            //     if(player.includes(winner)) {
+            //         console.log(`${winner.name} wins!`)
+            //         restartGame(winner);
+            //     } else {
+            //         console.log('Tie!');
+            //         restartGame(getTurn());
+            //     }
+            // }
+            // return;
+
+            return board.checkWin();
         };
         console.log(`Can't play that position`);
     }
@@ -161,6 +163,7 @@ function gameControl () {
         getTurn,
         playRound,
         getBoard,
+        restartGame,
     };
 }
 
@@ -168,6 +171,10 @@ function displayControl () {
     let game = gameControl();
 
     const updateBoard = () => {
+        // Update Turn
+        const turnDiv = document.getElementById('turn');
+        turnDiv.innerHTML = `It's ${game.getTurn().name} turn: ${game.getTurn().marker}`;
+
         const boardDiv = document.querySelector('#board');
         boardDiv.innerHTML = '';
         let board = game.getBoard();
@@ -194,9 +201,15 @@ function displayControl () {
         // The Id of button are made of 2 numbers, first the row second the col
         const row = buttonId[0];
         const col = buttonId[1];
-        game.playRound(row, col);
+        let won = game.playRound(row, col);
         
-        updateBoard();
+        if(!won){
+            updateBoard();
+        } else {
+            game.restartGame(won);
+            updateBoard();
+        }
+        
     }
 
     return{updateBoard}
