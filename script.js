@@ -125,15 +125,16 @@ function gameControl () {
         board.printBoard();
     }
 
-    const restartGame = (winner) => {
+    const restartGame = () => {
         board = CreateBoard();
-        playerTurn = winner;
         printTurn();
     }
 
     const playRound = (row, col) => {
         // If the play goes through return true else returns false
-        if(board.play(row, col, getTurn())) {
+        if(board.checkWin()) {
+            return
+        } else if (board.play(row, col, getTurn())) {
             printTurn();
             changeTurn();
             
@@ -206,10 +207,30 @@ function displayControl () {
         if(!won){
             updateBoard();
         } else {
-            game.restartGame(won);
             updateBoard();
+
+            (won === true) ? playAgain() : playAgain(won) // check if tie, if tie send no
         }
         
+    }
+
+    const playAgain = (winner) => {
+        const playAgainDiv = document.getElementById('playAgain');
+        const playAgainButton = document.getElementById('playAgainBtn');
+        const playAgainText = document.getElementById('winnerText');
+
+        playAgainDiv.classList.toggle('hide');
+        if(!winner){
+            playAgainText.innerHTML = `It's a tie`;
+        } else {
+            playAgainText.innerHTML = winner.name;
+        }
+
+        playAgainButton.addEventListener('click', () => {
+            playAgainDiv.classList.toggle('hide');
+            game.restartGame();
+            updateBoard()
+        }, {once: true});
     }
 
     return{updateBoard}
