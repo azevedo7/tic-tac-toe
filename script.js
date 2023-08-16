@@ -1,3 +1,7 @@
+// TODO 
+//  -Make player choose who plays
+
+
 // Create grid for game
 function CreateBoard() {
     const rows = 3;
@@ -223,7 +227,7 @@ function displayControl () {
         if(!winner){
             playAgainText.innerHTML = `It's a tie`;
         } else {
-            playAgainText.innerHTML = winner.name;
+            playAgainText.innerHTML = `${winner.name} wins`;
         }
 
         playAgainButton.addEventListener('click', () => {
